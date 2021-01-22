@@ -1,3 +1,5 @@
+from .strings import *
+
 import os
 
 def sort_by(positions, field):

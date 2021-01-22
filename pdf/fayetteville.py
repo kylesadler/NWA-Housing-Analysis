@@ -19,7 +19,7 @@ from . import PDF
 """
 
 def add_city(data):
-    return ['Fayetteville'] + data
+    return [['Fayetteville'] + x for x in data]
 
 class NewFayettevillePDF(PDF):
     TOLERANCE = 5
@@ -143,6 +143,8 @@ class NewFayettevillePDF(PDF):
                 
         return add_city(data)
 
+
+
 class OldFayettevillePDF(PDF):
     TOLERANCE = 5
 
@@ -181,14 +183,37 @@ class OldFayettevillePDF(PDF):
 
     def permit_to_data_row(self, permit):
         assert len(permit) == 3
-        assert 'permit' in permit[0]['text']
-        assert 'building area' in permit[1]['text']
-        assert 'valuation' in permit[2]['text']
+        permit = [x['text'] for x in permit]
+        assert 'permit' in permit[0]
+        assert 'building area' in permit[1]
+        assert 'valuation ' in permit[2]
 
-        # pprint([x for p in permits for x in p])
+        value = after('valuation ', permit[2]).strip()
+        assert '$' in value
+
+        work_type = between('permit #: ', 'date issued:', permit[0]).strip().split()[-1].strip()
+
+        permit_number = str(int(after('permit #: ', permit[0]).split()[0]))
 
 
-        return ['1-2 FAMILY', work_type, permit_number, value, contact, parcel, address, square_feet, date]
+        date = between('date issued:', 'site address', permit[0]).strip()
+        assert len(date.split('/')) == 3
+
+        square_feet = between('building area', 'dwelling units', permit[1])
+        _ = int(square_feet.replace(',', '')) # check that it is an int
+
+        address = between('site address:', 'contact:', permit[0]).strip()
+        contact = after('contact:', permit[0]).strip()
+        if contact[-1] == 'x':
+            contact = contact[:-1].strip()
+        parcel = ''
+
+
+        data_row = ['1-2 FAMILY', work_type, permit_number, value, contact, parcel, address, square_feet, date]
+        pprint(permit)
+        pprint(data_row)
+
+        return data_row
 
 
     def parse(self):
@@ -239,9 +264,9 @@ class OldFayettevillePDF(PDF):
             )
 
             permits = self.get_permit_rows(positions)
-            for p in permits:
+            for permit in permits:
                 # pprint([x['text'] for x in p])
-                data.append(permit_to_data_row(permit))
+                data.append(self.permit_to_data_row(permit))
         
         return add_city(data)
 
