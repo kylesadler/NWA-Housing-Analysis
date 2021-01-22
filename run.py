@@ -4,14 +4,16 @@ from util import *
 from config import *
 from pdf import *
 
+directory_to_pdf = {
+    FAYETTEVILLE_NEW_FORMAT_DIR: NewFayettevillePDF,
+    FAYETTEVILLE_DIR: July2020FayettevillePDF,
+    FAYETTEVILLE_OLD_FORMAT_DIR: OldFayettevillePDF,
+}
+
 data = []
-for path in get_paths(FAYETTEVILLE_NEW_FORMAT_DIR):
-    fay_pdf = NewFayettevillePDF(path)
-    data.extend(fay_pdf.parse())
+for directory, pdf_class in directory_to_pdf.items():
+    for path in get_paths(directory):
+        a_pdf = pdf_class(path)
+        data.extend(a_pdf.parse())
 
-for path in get_paths(FAYETTEVILLE_DIR):
-    fay_pdf = July2020FayettevillePDF(path)
-    data.extend(fay_pdf.parse())
-
-
-save_to_csv(data, 'output2.csv')
+save_to_csv(data, 'output.csv')

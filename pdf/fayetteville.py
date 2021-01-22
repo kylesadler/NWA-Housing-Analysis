@@ -1,5 +1,5 @@
 import re
-from pprint import pprint
+from pprint import pprint, pformat
 # import pymongo
 
 from pdfminer.pdfparser import PDFParser, PDFDocument
@@ -157,7 +157,7 @@ class OldFayettevillePDF(PDF):
 
         permits = get_positions(positions, 'permit #')
         num_permits = len(permits)
-        assert len(positions) == num_permits * 3
+        assert len(positions) == num_permits * 3, pformat(positions)
 
         permits = sort_by(permits, 'y') # sort from low (bottom of page) to high (top)
 
@@ -210,9 +210,8 @@ class OldFayettevillePDF(PDF):
 
 
         data_row = ['1-2 FAMILY', work_type, permit_number, value, contact, parcel, address, square_feet, date]
-        pprint(permit)
-        pprint(data_row)
-
+        # pprint(permit)
+        # pprint(data_row)
         return data_row
 
 
