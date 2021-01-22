@@ -44,4 +44,4 @@ class PDF:
                     extra_types.add(str(type(lobj)))
 
             yield positions
-        print(extra_types)
+        # print(extra_types)

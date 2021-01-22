@@ -146,6 +146,7 @@ class NewFayettevillePDF(PDF):
 
 
 class OldFayettevillePDF(PDF):
+    """ these are stupid """
     TOLERANCE = 5
 
     def in_texts(self, string, texts):
@@ -157,7 +158,7 @@ class OldFayettevillePDF(PDF):
 
         permits = get_positions(positions, 'permit #')
         num_permits = len(permits)
-        assert len(positions) == num_permits * 3, pformat(positions)
+        # assert len(positions) == num_permits * 3, pformat(positions)
 
         permits = sort_by(permits, 'y') # sort from low (bottom of page) to high (top)
 
@@ -223,23 +224,30 @@ class OldFayettevillePDF(PDF):
         to_append = False
         for i, positions in enumerate(self.generate_positions()):
             original_texts = [p['original_text'] for p in positions]
-
+            # print([x for x in original_texts if "Page" in x])
+                
+            # if i == 5:
+                # pprint(positions)
+            # first page
             if self.in_texts('NEW', original_texts) and self.in_texts('ALTER', original_texts) and self.in_texts('Area this Worktype', original_texts) and not self.in_texts('ADDTN', original_texts):
+                # print()
+                assert not to_append
+                # print('yes')
                 to_append = True
-            
-            if self.in_texts('NEW', original_texts) and self.in_texts('1-2 FAMILY', original_texts) and self.in_texts('Area this Worktype', original_texts):
-                new_residential_pages.append(positions)
-                break
             
             if to_append:
                 new_residential_pages.append(positions)
 
+            # last page
+            if self.in_texts('NEW', original_texts) and self.in_texts('1-2 FAMILY', original_texts) and self.in_texts('Area this Worktype', original_texts):
+                assert to_append
+                break
         # print('new_residential_pages', new_residential_pages)
 
         data = []
         for i, positions in enumerate(new_residential_pages):
             texts = [p['original_text'] for p in positions]
-            print([x for x in texts if "Page" in x])
+            # print([x for x in texts if "Page" in x])
 
             if i == 0:
                 new = get_position(positions, 'NEW')
@@ -249,11 +257,16 @@ class OldFayettevillePDF(PDF):
             try:
                 assert i != 0
                 total = get_position(positions, 'Area this Worktype')
-            except:
+            except AssertionError:
                 total = {'y': -1}
 
+            try:
+                page = get_position(positions, 'Page')
+            except:
+                # pprint([x['text'] for x in positions])
+                continue
+                # page = get_position(positions, 'Printed: ')
 
-            page = get_position(positions, 'Page')
             title = get_position(positions, 'Report of Building Permit')
 
             positions = clip(

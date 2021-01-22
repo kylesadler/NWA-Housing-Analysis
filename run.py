@@ -7,7 +7,6 @@ from pdf import *
 directory_to_pdf = {
     FAYETTEVILLE_NEW_FORMAT_DIR: NewFayettevillePDF,
     FAYETTEVILLE_DIR: July2020FayettevillePDF,
-    FAYETTEVILLE_OLD_FORMAT_DIR: OldFayettevillePDF,
 }
 
 data = []

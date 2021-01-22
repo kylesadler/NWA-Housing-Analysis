@@ -12,9 +12,14 @@ paths = get_paths(FAYETTEVILLE_OLD_FORMAT_DIR)
 data = []
 # print(paths[0])
 for path in paths:
-    print(path)
-    fay_pdf = OldFayettevillePDF(path)
-    data.extend(fay_pdf.parse())
+    try:
+        fay_pdf = OldFayettevillePDF(path)
+        data.extend(fay_pdf.parse())
+    except:
+        pass
+    else:
+        print(path)
 
-print_data(data)
-# save_to_csv(data, 'output2.csv')
+
+# print_data(data)
+save_to_csv(data, 'output2.csv')
